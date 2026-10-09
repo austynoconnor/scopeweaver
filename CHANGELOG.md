@@ -1,5 +1,33 @@
 # Upstream ARTEX changelog
 
+## Dashboard live-feed port fix — 2026-10-09 01:33 -05:00 — GPT-6.1 Sol
+
+- Fixed production SSE URLs to use the dashboard's own origin rather than hard-coded port 8787. This restores live feeds on the local 8790 Docker mapping and supports HTTPS reverse proxies. Development retains its direct 8787 backend, and explicit NEXT_PUBLIC_SSE_BASE overrides remain supported.
+- Preserved the local JWT signing key through an ignored bind mount so container replacement retains the existing login session. Local port mappings, PostgreSQL task history and Anthropic profiles are retained.
+- Verified production/development URL selection, token encoding, existing query strings and explicit/empty base overrides; frontend compilation, TypeScript checking, static export and embedded Go binary build passed. Applied the rebuilt container, confirmed the existing login remains valid and the task page shows Live, and resumed task #1 after a brief update pause.
+
+
+## Local Anthropic model configuration — 2026-10-09 01:21 -05:00 — GPT-6.1 Sol
+
+- Saved separate Claude Opus 4.6 (claude-opus-4-6) and Claude Opus 4.5 (claude-opus-4-5-20251101) profiles through the local application API, reusing the existing Anthropic credential without printing it or adding it to source files.
+- Both profiles use the direct Anthropic endpoint, streaming, 200K context, an 8,192-token output limit and provider defaults for optional thinking/effort settings.
+- Verified both profiles through Scopeweaver's connection test; each returned OK. Activated Opus 4.6 and verified both saved profiles have credentials, with Opus 4.5 available for selection.
+
+
+## Local Windows installation — 2026-10-08 18:27 CDT — GPT-6.1 Sol
+
+- Installed source checkout 75a706d under Documents/Codex/scopeweaver and built
+  the provided Docker image, including the embedded frontend, Go backend,
+  Chromium/Playwright and bundled runtime tools.
+- Started a dedicated PostgreSQL 16 container with a persistent data volume and
+  a generated local database password in ignored .env. Published the dashboard
+  only on 127.0.0.1:8790 and the proxy on 127.0.0.1:8791 through compose.local.yml.
+- Added a Windows PowerShell startup launcher, a Start menu shortcut and local
+  setup instructions. Verified container health, HTTP /api/health and binary help;
+  verified the English first-run password setup page in the Codex browser.
+- Model credentials remain unset pending the operator's model configuration.
+  No scanning tasks or external model requests were started during installation.
+
 This is the translated upstream ARTEX history from baseline `160fe13`, preserving its original dates, contributors and technical history. These entries are not ScopeWeaver releases. ScopeWeaver's 2026-10-02 modifications are recorded separately in [provenance](docs/PROVENANCE.md). Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). [한국어](CHANGELOG.ko.md).
 
 ## [Unreleased]

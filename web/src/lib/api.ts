@@ -153,7 +153,9 @@ export async function http<T>(path: string, init?: RequestInit): Promise<T> {
 // sseUrl builds a URL for Server-Sent Events streams. SSE must NOT go through the
 // Next.js dev `/api` rewrite: that proxy buffers the streamed response, so event
 // frames never reach the browser (the EventSource opens but receives 0 messages).
-// We therefore connect straight to the Go backend, whose CORS is open. Override
+// Development connects straight to the Go backend, whose CORS is open. Packaged
+// builds serve both the UI and streams from the same origin, including remapped
+// Docker ports and HTTPS reverse proxies. Override
 // with NEXT_PUBLIC_SSE_BASE; set it to "" to force same-origin (e.g. behind a
 // production reverse proxy that flushes SSE correctly).
 // Token is appended as ?token= because SSE bypasses the Next.js proxy and the
@@ -166,7 +168,9 @@ function mockReport(_task?: string): string {
 export function sseUrl(path: string): string {
   const base =
     process.env.NEXT_PUBLIC_SSE_BASE ??
-    (typeof window !== "undefined" ? `${window.location.protocol}//${window.location.hostname}:8787` : "");
+    (process.env.NODE_ENV === "development" && typeof window !== "undefined"
+      ? `${window.location.protocol}//${window.location.hostname}:8787`
+      : "");
   const token = getToken();
   const sep = path.includes("?") ? "&" : "?";
   return localizedUrl(token ? `${base}${path}${sep}token=${encodeURIComponent(token)}` : `${base}${path}`);
